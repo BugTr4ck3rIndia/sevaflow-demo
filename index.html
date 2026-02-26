@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SevaFlow - Solve Real World Problems</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen active">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h2>SevaFlow</h2>
+            <p>Connecting to database...</p>
+        </div>
+    </div>
+
+    <!-- Authentication Pages -->
+    <div id="loginPage" class="auth-page">
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h1>Welcome to SevaFlow</h1>
+                    <p>Sign in to start solving problems together</p>
+                </div>
+                <form class="auth-form" id="loginForm">
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="loginEmail" required placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPassword" required placeholder="Enter your password">
+                    </div>
+                    <button type="submit" class="auth-btn">Sign In</button>
+                </form>
+                <div class="auth-links">
+                    <a href="#" onclick="showPage('forgotPage')">Forgot Password?</a>
+                    <p>Don't have an account? <a href="#" onclick="showPage('signupPage')">Create Account</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="signupPage" class="auth-page">
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h1>Join SevaFlow</h1>
+                    <p>Create an account to share and solve problems</p>
+                </div>
+                <form class="auth-form" id="signupForm">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="signupName" required placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="signupUsername" required placeholder="Choose a username">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="signupEmail" required placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label>Bio (Optional)</label>
+                        <textarea id="signupBio" placeholder="Tell us about yourself" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="signupPassword" required placeholder="Create a password">
+                    </div>
+                    <button type="submit" class="auth-btn">Create Account</button>
+                </form>
+                <div class="auth-links">
+                    <p>Already have an account? <a href="#" onclick="showPage('loginPage')">Sign in</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="forgotPage" class="auth-page">
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h1>Reset Password</h1>
+                    <p>Enter your email to receive reset instructions</p>
+                </div>
+                <form class="auth-form" id="forgotForm">
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="forgotEmail" required placeholder="Enter your email">
+                    </div>
+                    <button type="submit" class="auth-btn">Send Reset Link</button>
+                </form>
+                <div class="auth-links">
+                    <a href="#" onclick="showPage('loginPage')">Back to Sign In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo">
+                    <h2>SevaFlow</h2>
+                </div>
+                <div class="header-search">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="userSearchInput" placeholder="Search users...">
+                        <div class="search-results" id="searchResults"></div>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-count" id="notificationCount">0</span>
+                    </button>
+                    <div class="user-menu">
+                        <img src="https://via.placeholder.com/32/f3a4ff/1a1a2e?text=U" alt="User" class="user-avatar" id="headerAvatar">
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Section -->
+        <div id="dashboardSection" class="app-section active">
+            <div class="section-content">
+                <div class="welcome-card">
+                    <h2 id="welcomeMessage">Welcome to SevaFlow! 👋</h2>
+                    <p>Ready to solve problems and help others?</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card primary">
+                        <div class="stat-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="problemsSharedCount">0</h3>
+                            <p>Problems Shared</p>
+                        </div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="problemsSolvedCount">0</h3>
+                            <p>Problems Solved</p>
+                        </div>
+                    </div>
+                    <div class="stat-card info">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="followersCount">0</h3>
+                            <p>Followers</p>
+                        </div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-icon">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="followingCount">0</h3>
+                            <p>Following</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="activity-feed">
+                    <h3>Recent Activity</h3>
+                    <div class="activity-list" id="recentActivity">
+                        <div class="empty-state">
+                            <i class="fas fa-rocket"></i>
+                            <p>Start sharing problems to see your activity here!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Problems Section -->
+        <div id="problemsSection" class="app-section">
+            <div class="section-content">
+                <div class="section-header">
+                    <h2>Problems & Solutions</h2>
+                    <button class="primary-btn" onclick="openShareProblemModal()">
+                        <i class="fas fa-plus"></i> Share Problem
+                    </button>
+                </div>
+
+                <div class="filter-tabs">
+                    <button class="tab-btn active" data-filter="all">All Problems</button>
+                    <button class="tab-btn" data-filter="unsolved">Unsolved</button>
+                    <button class="tab-btn" data-filter="solved">Solved</button>
+                    <button class="tab-btn" data-filter="mine">My Problems</button>
+                </div>
+
+                <div class="problems-list" id="problemsList">
+                    <div class="loading-placeholder">
+                        <div class="spinner"></div>
+                        <p>Loading problems...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feed Section -->
+        <div id="feedSection" class="app-section">
+            <div class="section-content">
+                <div class="section-header">
+                    <h2>Community Feed</h2>
+                    <button class="primary-btn" onclick="openCreatePostModal()">
+                        <i class="fas fa-plus"></i> Create Post
+                    </button>
+                </div>
+
+                <div class="feed-list" id="feedList">
+                    <div class="loading-placeholder">
+                        <div class="spinner"></div>
+                        <p>Loading feed...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages Section -->
+        <div id="messagesSection" class="app-section">
+            <div class="section-content">
+                <div class="section-header">
+                    <h2>Messages</h2>
+                </div>
+                <div class="messages-layout">
+                    <div class="chat-list">
+                        <h3>Conversations</h3>
+                        <div class="chat-items" id="chatList">
+                            <div class="empty-state">
+                                <i class="fas fa-comments"></i>
+                                <p>No conversations yet. Start helping others to begin messaging!</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-window">
+                        <div class="chat-header">
+                            <h4>Select a conversation</h4>
+                        </div>
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="empty-chat">
+                                <i class="fas fa-comments"></i>
+                                <p>Choose a conversation to start messaging</p>
+                            </div>
+                        </div>
+                        <div class="chat-input">
+                            <input type="text" id="messageInput" placeholder="Type a message...">
+                            <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Section -->
+        <div id="profileSection" class="app-section">
+            <div class="section-content">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <img src="https://via.placeholder.com/120/f3a4ff/1a1a2e?text=U" alt="Profile" id="profileAvatar">
+                    </div>
+                    <div class="profile-info">
+                        <h2 id="profileName">Loading...</h2>
+                        <p class="username" id="profileUsername">@loading</p>
+                        <p class="bio" id="profileBio">Loading bio...</p>
+                        <div class="profile-stats">
+                            <div class="stat">
+                                <span class="stat-number" id="profileFollowers">0</span>
+                                <span class="stat-label">Followers</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-number" id="profileFollowing">0</span>
+                                <span class="stat-label">Following</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-number" id="profileProblems">0</span>
+                                <span class="stat-label">Problems</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-content">
+                    <div class="profile-tabs">
+                        <button class="tab-btn active" data-tab="activity">Activity</button>
+                        <button class="tab-btn" data-tab="problems">Problems</button>
+                        <button class="tab-btn" data-tab="solutions">Solutions</button>
+                    </div>
+                    <div class="profile-tab-content" id="profileTabContent">
+                        <!-- Content will be populated by JavaScript -->
+                    </div>
+                    
+                    <div class="logout-section">
+                        <button class="logout-btn" onclick="handleLogout()">
+                            <i class="fas fa-sign-out-alt"></i> Sign Out
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-btn active" data-section="dashboard">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </button>
+            <button class="nav-btn" data-section="problems">
+                <i class="fas fa-lightbulb"></i>
+                <span>Problems</span>
+            </button>
+            <button class="nav-btn" data-section="feed">
+                <i class="fas fa-rss"></i>
+                <span>Feed</span>
+            </button>
+            <button class="nav-btn" data-section="messages">
+                <i class="fas fa-envelope"></i>
+                <span>Messages</span>
+            </button>
+            <button class="nav-btn" data-section="profile">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Modals -->
+    <div id="shareProblemModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Share a Problem</h3>
+                <button class="close-btn" onclick="closeModal('shareProblemModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="shareProblemForm">
+                <div class="form-group">
+                    <label>Problem Title</label>
+                    <input type="text" id="problemTitle" required placeholder="What problem do you need help with?">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="problemDescription" rows="4" required placeholder="Describe your problem in detail..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="problemCategory" required>
+                        <option value="">Select Category</option>
+                        <option value="Environment">Environment</option>
+                        <option value="Health">Health</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Lifestyle">Lifestyle</option>
+                        <option value="Education">Education</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Career">Career</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <button type="submit" class="primary-btn">Share Problem</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="createPostModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create Post</h3>
+                <button class="close-btn" onclick="closeModal('createPostModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="createPostForm">
+                <div class="form-group">
+                    <label>Post Type</label>
+                    <select id="postType" required>
+                        <option value="text">Text Post</option>
+                        <option value="solution">Solution Share</option>
+                        <option value="update">Update</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Content</label>
+                    <textarea id="postContent" rows="4" placeholder="Share your thoughts, solutions, or updates..." required></textarea>
+                </div>
+                <button type="submit" class="primary-btn">Create Post</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="userProfileModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="userModalName">User Profile</h3>
+                <button class="close-btn" onclick="closeModal('userProfileModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="user-profile-content">
+                <div class="user-profile-header">
+                    <img src="https://via.placeholder.com/80/f3a4ff/1a1a2e?text=U" alt="User" id="userModalAvatar">
+                    <div class="user-profile-info">
+                        <h3 id="userModalFullName">User Name</h3>
+                        <p id="userModalUsername">@username</p>
+                        <p id="userModalBio">User bio...</p>
+                    </div>
+                </div>
+                <div class="user-profile-stats">
+                    <div class="stat">
+                        <span class="stat-number" id="userModalFollowers">0</span>
+                        <span class="stat-label">Followers</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number" id="userModalFollowing">0</span>
+                        <span class="stat-label">Following</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number" id="userModalProblems">0</span>
+                        <span class="stat-label">Problems</span>
+                    </div>
+                </div>
+                <div class="user-profile-actions">
+                    <button class="primary-btn" id="followBtn" onclick="toggleFollow()">
+                        <i class="fas fa-user-plus"></i> Follow
+                    </button>
+                    <button class="auth-btn" onclick="startChat()">
+                        <i class="fas fa-message"></i> Message
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
